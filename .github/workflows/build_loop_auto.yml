@@ -1,7 +1,11 @@
-name: 4. Build Loop Manual
-run-name: Build Loop Manual (${{ github.ref_name }})
+name: 4. Build Loop Auto 
+run-name: Build Loop Auto (${{ github.ref_name }})
 on:
   workflow_dispatch:
+  schedule:
+    # Check for updates every Sunday
+    #   Later logic builds if there are updates or if it is the 2nd Sunday of the month
+    - cron: "33 7 * * 0" # Sunday at UTC 7:33
 
 env:
   GH_PAT: ${{ secrets.GH_PAT }}
@@ -207,16 +211,6 @@ jobs:
           # Several patches may be added per submodule.
           # Adding comments (#) may be useful to easily tell the individual patches apart.
 
-          # The lines below add the customizations listed using the CustomizationSelect script
-          # The "\" is a continuation character 
-          #   the line following a "\" should not be blank
-          /bin/bash -c "$(curl -fsSL \
-          https://raw.githubusercontent.com/loopandlearn/lnl-scripts/main/CustomizationSelect.sh)" \
-          profiles 
-          export SCRIPT_BRANCH=prelim_ai_food && export PATCH_BRANCH=prelim_ai_food && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/loopandlearn/lnl-scripts/$SCRIPT_BRANCH/CustomizationSelect.sh)" food_search
-          
-          # the final customization listed above CANNOT have a continuation character
-          # more customizations can be pasted after this line
       # Patch Fastlane Match to not print tables
       - name: Patch Match Tables
         run: |
